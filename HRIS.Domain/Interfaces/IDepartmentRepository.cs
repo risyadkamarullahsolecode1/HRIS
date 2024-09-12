@@ -17,8 +17,14 @@ namespace HRIS.Domain.Interfaces
         Task<Employee> GetManagerByDeptNoAsync(int deptNo);
         Task<Employee> GetSupervisorByDeptNoAsync(int deptNo);
         Task<List<Employee>> GetEmployeesBySupervisorIdAsync(int spvEmpNo);
+
+        // dashboard total employee in each department
         Task<Dictionary<string, int>> GetEmployeeByDepartment();
+
+        // dashboard average salary per each department
         Task<Dictionary<string, int>> GetAverageSalaryByDepartmentAsync();
+
+        // report employee by department name
         Task<byte[]> GenerateEmployeeReportByDepartmentAsync(string departmentName, int pageNumber);
     }
 }

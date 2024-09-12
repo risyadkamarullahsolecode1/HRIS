@@ -55,6 +55,7 @@ namespace HRIS.Infrastructure.Data.Repository
             return await _context.Worksons.ToListAsync();
         }
 
+        // dashboard working hours
         public async Task<object> GetTop5EmployeesByWorkingHours()
         {
             var topEmployees = await _context.Worksons

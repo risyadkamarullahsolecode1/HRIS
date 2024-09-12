@@ -17,6 +17,8 @@ namespace HRIS.Domain.Interfaces
         Task<bool> ApproveLeaveRequestAsync(int workflowActionId, int processId, string actorId, string role, bool isApproved, string comment);
         Task SubmitLeaveRequestAsync(LeaveRequest request, string userId);
         Task<string> GetEmployeeEmailById(string employeeId);
+
+        // report generate leave report by leave type
         Task<byte[]> GenerateLeaveReportByTypeAsync(string leaveType, DateTime startDate, DateTime endDate);
     }
 }

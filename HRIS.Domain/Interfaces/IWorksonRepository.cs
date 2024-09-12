@@ -15,6 +15,8 @@ namespace HRIS.Domain.Interfaces
         Task<Workson> UpdateWorkson(Workson workson);
         Task<bool> DeleteWorkson(int empNo, int projNo);
         Task<IEnumerable<Workson>> GetWorksonByEmployee(int empNo);
+
+        // dashboard working hours
         Task<object> GetTop5EmployeesByWorkingHours();
     }
 }

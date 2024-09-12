@@ -54,6 +54,7 @@ namespace HRIS.Infrastructure.Data.Repository
             return true;
         }
 
+        // report for project report
         public async Task<byte[]> GenerateProjectReportAsync()
         {
             var projects = await _context.Projects

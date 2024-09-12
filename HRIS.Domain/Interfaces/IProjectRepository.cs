@@ -14,6 +14,8 @@ namespace HRIS.Domain.Interfaces
         Task<Project> AddProject(Project project);
         Task<Project> UpdateProject(Project project);
         Task<bool> DeleteProject(int projNo);
+
+        // report for project report
         Task<byte[]> GenerateProjectReportAsync();
     }
 }

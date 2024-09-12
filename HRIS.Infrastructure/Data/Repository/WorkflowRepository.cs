@@ -286,7 +286,7 @@ namespace MiniProject7.Infrastructure.Data.Repository
             return user?.Email;
         }
 
-        //report
+        // report generate leave report by leave type
         public async Task<byte[]> GenerateLeaveReportByTypeAsync(string leaveType, DateTime startDate, DateTime endDate)
         {
             var leaves = await _context.LeaveRequests

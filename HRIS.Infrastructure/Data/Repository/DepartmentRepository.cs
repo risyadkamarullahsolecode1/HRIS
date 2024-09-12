@@ -110,6 +110,12 @@ namespace HRIS.Infrastructure.Data.Repository
 
             return employees;
         }
+
+        /// <summary>
+        /// Use  this as method to employee in each department
+        /// </summary>
+        /// <returns></returns>
+        // dashboard total employee in each department
         public async Task<Dictionary<string, int>> GetEmployeeByDepartment()
         {
             var result = await _context.Employees
@@ -120,6 +126,7 @@ namespace HRIS.Infrastructure.Data.Repository
             return result;
         }
 
+        // dashboard average salary per each department
         public async Task<Dictionary<string, int>> GetAverageSalaryByDepartmentAsync()
         {
             // Group employees by Deptno (Department ID), then calculate the average salary per department
@@ -135,6 +142,7 @@ namespace HRIS.Infrastructure.Data.Repository
             return averageSalaries;
         }
 
+        // report employee by department name
         public async Task<byte[]> GenerateEmployeeReportByDepartmentAsync(string departmentName, int pageNumber)
         {
             int pageSize = 20; // Limit to 20 employees per page
