@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using HRIS.Domain.Entities;
 using HRIS.Domain.Interfaces;
 using HRIS.Application.Dtos;
+using System.Security.Claims;
+using HRIS.Application.Interfaces;
 
 namespace MiniProject7.WebAPI.Controllers
 {
@@ -11,10 +13,12 @@ namespace MiniProject7.WebAPI.Controllers
     public class WorkflowController : ControllerBase
     {
         private readonly IWorkflowRepository _workflowRepository;
+        private readonly IWorkflowService _workflowService;
 
-        public WorkflowController(IWorkflowRepository workflowRepository)
+        public WorkflowController(IWorkflowRepository workflowRepository, IWorkflowService workflowService)
         {
             _workflowRepository = workflowRepository;
+            _workflowService = workflowService;
         }
 
         [HttpPost("add-workflow")]
@@ -53,7 +57,7 @@ namespace MiniProject7.WebAPI.Controllers
 
         [Authorize(Roles = "HR Manager, Supervisor")]
         [HttpPut("approve")]
-        public async Task<IActionResult> ApproveLeaveRequest(int actionId,[FromBody] LeaveApprovalRequestDto request)
+        public async Task<IActionResult> ApproveLeaveRequest(int actionId, [FromBody] LeaveApprovalRequestDto request)
         {
             try
             {
@@ -91,10 +95,32 @@ namespace MiniProject7.WebAPI.Controllers
         }
 
         [HttpGet("generate-leave-report")]
-        public async Task<IActionResult> GenerateLeaveReport(string leaveType, DateTime startDate, DateTime endDate)
+        public async Task<IActionResult> GenerateLeaveReport(DateTime startDate, DateTime endDate)
         {
-            var pdfBytes = await _workflowRepository.GenerateLeaveReportByTypeAsync(leaveType, startDate, endDate);
+            var pdfBytes = await _workflowRepository.GenerateLeaveReportByTypeAsync(startDate, endDate);
             return File(pdfBytes, "application/pdf", "LeaveReport.pdf");
         }
+
+        [Authorize]
+        [HttpGet("pending-processes")]
+        public async Task<IActionResult> GetPendingProcesses()
+        {
+            // Fetch pending processes by calling the service method
+            var pendingProcesses = await _workflowService.GetPendingProcessesForUserAsync();
+
+            if (pendingProcesses == null || !pendingProcesses.Any())
+            {
+                return NotFound("No pending processes found for the current user.");
+            }
+
+            return Ok(pendingProcesses);
+        }
+
+        /**[HttpGet("process")]
+        public async Task<IActionResult> GetPendingProcessesForUserAsync(string currentUserId)
+        {
+            var result = await _workflowRepository.GetPendingProcessesForUserAsync(currentUserId);
+            return Ok(result);
+        }**/
     }
 }

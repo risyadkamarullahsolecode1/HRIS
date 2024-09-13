@@ -19,6 +19,8 @@ namespace HRIS.Domain.Interfaces
         Task<string> GetEmployeeEmailById(string employeeId);
 
         // report generate leave report by leave type
-        Task<byte[]> GenerateLeaveReportByTypeAsync(string leaveType, DateTime startDate, DateTime endDate);
+        Task<byte[]> GenerateLeaveReportByTypeAsync(DateTime startDate, DateTime endDate);
+
+        Task<IEnumerable<Process>> GetPendingProcessesForUserAsync(List<string> userRoles);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using HRIS.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRIS.WebAPI.Controllers
@@ -14,6 +15,7 @@ namespace HRIS.WebAPI.Controllers
             _dashboardService = dashboardService;
         }
 
+        [Authorize(Roles = "HR Manager, Administrator")]
         [HttpGet]
         public async Task<IActionResult> GetKpiReport()
         {

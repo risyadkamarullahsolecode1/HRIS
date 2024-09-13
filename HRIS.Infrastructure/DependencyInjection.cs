@@ -59,7 +59,13 @@ namespace HRIS.Infrastructure
                 SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:SigningKey"])),
                 };
             });
-
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("HRManagerOnly", policy => policy.RequireRole("HR Manager"));
+                options.AddPolicy("SupervisorOnly", policy => policy.RequireRole("Supervisor"));
+                options.AddPolicy("EmployeeOnly", policy => policy.RequireRole("Employee"));
+            });
+            services.AddHttpContextAccessor();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();
@@ -74,7 +80,7 @@ namespace HRIS.Infrastructure
             services.AddScoped<IEmailService, EmailService>();
 
             services.AddScoped<IDashboardService, DasboardService>();
-
+            services.AddScoped<IWorkflowService, WorkflowService>();
             return services;
         }
     }

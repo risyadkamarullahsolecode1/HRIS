@@ -119,9 +119,9 @@ namespace HRIS.Infrastructure.Data.Repository
         public async Task<Dictionary<string, int>> GetEmployeeByDepartment()
         {
             var result = await _context.Employees
-                .GroupBy(e => e.DeptnoNavigation.Deptname) // Group by the department name
-                .Select(g => new { Deptname = g.Key, Count = g.Count() }) // Select department name and count of employees
-                .ToDictionaryAsync(x => x.Deptname, x => x.Count); // Convert to dictionary
+                .GroupBy(e => e.DeptnoNavigation.Deptname) 
+                .Select(g => new { Deptname = g.Key, Count = g.Count() }) 
+                .ToDictionaryAsync(x => x.Deptname, x => x.Count); 
 
             return result;
         }
@@ -131,11 +131,11 @@ namespace HRIS.Infrastructure.Data.Repository
         {
             // Group employees by Deptno (Department ID), then calculate the average salary per department
             var averageSalaries = await _context.Employees
-                .GroupBy(e => e.Deptno) // Group by Department ID
+                .GroupBy(e => e.Deptno) // Group by Department No
                 .Select(g => new
                 {
                     DepartmentName = g.FirstOrDefault().DeptnoNavigation.Deptname, // Get the department name
-                    AverageSalary = (int)(g.Average(e => e.Salary) ?? 0) // Cast average salary to int, fallback to 0 if null
+                    AverageSalary = (int)(g.Average(e => e.Salary) ?? 0) 
                 })
                 .ToDictionaryAsync(x => x.DepartmentName, x => x.AverageSalary);
 
@@ -145,26 +145,46 @@ namespace HRIS.Infrastructure.Data.Repository
         // report employee by department name
         public async Task<byte[]> GenerateEmployeeReportByDepartmentAsync(string departmentName, int pageNumber)
         {
-            int pageSize = 20; // Limit to 20 employees per page
+            int pageSize = 20; // Set the page size to 20 employees per page
 
+            // Fetch all employees for the department, ordered by employee number
             var employees = await _context.Employees
                 .Where(e => e.DeptnoNavigation.Deptname == departmentName)
-                .OrderBy(e => e.Fname + " " + e.Lname)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
+                .OrderBy(e => e.Empno)
                 .ToListAsync();
 
+            // Start the HTML content for the PDF
             string htmlContent = "<h1>Employee Report</h1>";
             htmlContent += $"<h2>Department: {departmentName}</h2>";
-            htmlContent += "<table><thead><tr><td>Employee ID</td><td>Username</td><td>Full Name</td></tr></thead><tbody>";
 
-            employees.ForEach(emp =>
+            // Split the list into pages of 20 employees
+            int totalPages = (int)Math.Ceiling(employees.Count / (double)pageSize);
+
+            for (int page = 1; page <= totalPages; page++)
             {
-                htmlContent += $"<tr><td>{emp.Empno}</td><td>{emp.Fname + " " + emp.Lname}</td><td>{emp.Fname} {emp.Lname}</td></tr>";
-            });
+                htmlContent += $"<h3>Page {page} of {totalPages}</h3>";
+                htmlContent += "<table><thead><tr><td>Employee ID</td><td>Username</td><td>Full Name</td><td>Position</td></tr></thead><tbody>";
 
-            htmlContent += "</tbody></table>";
+                var employeesPage = employees
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
 
+                employeesPage.ForEach(emp =>
+                {
+                    htmlContent += $"<tr><td>{emp.Empno}</td><td>{emp.Fname + " " + emp.Lname}</td><td>{emp.Fname} {emp.Lname}</td><td>{emp.Position}</td></tr>";
+                });
+
+                htmlContent += "</tbody></table>";
+
+                // Add a page break after each page except the last one
+                if (page < totalPages)
+                {
+                    htmlContent += "<div style='page-break-after: always;'></div>";
+                }
+            }
+
+            // Generate the PDF from the HTML content
             return GeneratePdf(htmlContent);
         }
 

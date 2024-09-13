@@ -61,6 +61,7 @@ namespace HRIS.Infrastructure.Data.Repository
                 .Select(p => new
                 {
                     ProjectName = p.Projname,
+                    DepartmentName = p.DeptnoNavigation.Deptname,
                     TotalHours = p.Worksons.Sum(w => w.Hoursworked),
                     TotalEmployees = p.Worksons.Select(w => w.Empno).Distinct().Count(),
                     AverageHours = p.Worksons.Average(w => w.Hoursworked)
@@ -68,11 +69,11 @@ namespace HRIS.Infrastructure.Data.Repository
                 .ToListAsync();
 
             string htmlContent = "<h1>Project Report</h1>";
-            htmlContent += "<table><thead><tr><td>Project Name</td><td>Total Hours</td><td>Total Employees</td><td>Average Hours</td></tr></thead><tbody>";
+            htmlContent += "<table><thead><tr><td>Project Name</td><td>Department Name</td><td>Total Hours</td><td>Total Employees</td><td>Average Hours</td></tr></thead><tbody>";
 
             projects.ForEach(project =>
             {
-                htmlContent += $"<tr><td>{project.ProjectName}</td><td>{project.TotalHours}</td><td>{project.TotalEmployees}</td><td>{project.AverageHours}</td></tr>";
+                htmlContent += $"<tr><td>{project.ProjectName}</td><td>{project.DepartmentName}</td><td>{project.TotalHours}</td><td>{project.TotalEmployees}</td><td>{project.AverageHours}</td></tr>";
             });
 
             htmlContent += "</tbody></table>";

@@ -157,7 +157,7 @@ namespace MiniProject7.Infrastructure.Data.Repository
                 {
                     ProcessId = processId,
                     StepId = isApproved ? nextStepId : 4, // Next step for HR if approved
-                    ActorId = isApproved ? "ba2ed92d-d3f0-4eb9-afec-b7706ab4f87a" : actorId, 
+                    ActorId = isApproved ? "9e4603ba-a3e0-4a82-ba24-8489205a0752" : actorId, 
                     Action = isApproved ? "Pending HR Approval" : "Rejected by Supervisor",
                     ActionDate = DateTime.UtcNow,
                     Comment = comment
@@ -287,16 +287,15 @@ namespace MiniProject7.Infrastructure.Data.Repository
         }
 
         // report generate leave report by leave type
-        public async Task<byte[]> GenerateLeaveReportByTypeAsync(string leaveType, DateTime startDate, DateTime endDate)
+        public async Task<byte[]> GenerateLeaveReportByTypeAsync(DateTime startDate, DateTime endDate)
         {
             var leaves = await _context.LeaveRequests
-                .Where(l => l.LeaveType == leaveType && l.StartDate >= startDate && l.EndDate <= endDate)
+                .Where(l => l.StartDate >= startDate && l.EndDate <= endDate)
                 .GroupBy(l => l.LeaveType)
                 .Select(g => new { LeaveType = g.Key, TotalLeaves = g.Count() })
                 .ToListAsync();
 
             string htmlContent = "<h1>Leave Report</h1>";
-            htmlContent += $"<h2>Leave Type: {leaveType}</h2>";
             htmlContent += $"<h3>Time Period: {startDate.ToShortDateString()} - {endDate.ToShortDateString()}</h3>";
             htmlContent += "<table><thead><tr><td>Leave Type</td><td>Total Leaves Taken</td></tr></thead><tbody>";
 
@@ -329,6 +328,22 @@ namespace MiniProject7.Infrastructure.Data.Repository
                 document.Save(stream, false);
                 return stream.ToArray();
             }
+        }
+
+        public async Task<IEnumerable<Process>> GetPendingProcessesForUserAsync(List<string> userRoles)
+        {
+            return await _context.WorkflowActions
+                .Where(wa =>
+                    // Supervisor can see pending tasks if status is "Waiting for Supervisor Approval"
+                    (userRoles.Contains("Supervisor") && wa.Action == "Submit Leave Request") ||
+
+                    // HR can see tasks that are "Supervisor Approved"
+                    (userRoles.Contains("HR Manager") && wa.Action == "Pending HR Approval") 
+
+                )
+                .Select(wa => wa.Process) // Select processes associated with workflow actions
+                .Distinct() // Remove duplicates if any
+                .ToListAsync();
         }
     }
 }

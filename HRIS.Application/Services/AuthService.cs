@@ -110,9 +110,6 @@ namespace MiniProject7.Application.Services
                 user.RefreshToken = refreshToken;
                 var refreshTokenExpiryDate = user.RefreshTokenExpiryTime = DateTime.UtcNow.AddHours(8);
 
-                await _userManager.UpdateAsync(user);
-
-                await _userManager.UpdateAsync(user);
 
                 return new ResponseModel
                 {
