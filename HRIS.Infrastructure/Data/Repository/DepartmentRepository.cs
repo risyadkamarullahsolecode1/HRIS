@@ -143,7 +143,7 @@ namespace HRIS.Infrastructure.Data.Repository
         }
 
         // report employee by department name
-        public async Task<byte[]> GenerateEmployeeReportByDepartmentAsync(string departmentName, int pageNumber)
+        public async Task<byte[]> GenerateEmployeeReportByDepartmentAsync(string departmentName)
         {
             int pageSize = 20; // Set the page size to 20 employees per page
 

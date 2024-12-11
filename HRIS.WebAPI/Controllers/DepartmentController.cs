@@ -75,9 +75,9 @@ namespace HRIS.WebAPI.Controllers
             return Ok(result);
         }
         [HttpGet("generate-employee-report")]
-        public async Task<IActionResult> GenerateEmployeeReport(string departmentName, int pageNumber)
+        public async Task<IActionResult> GenerateEmployeeReport(string departmentName)
         {
-            var pdfBytes = await _departmentRepository.GenerateEmployeeReportByDepartmentAsync(departmentName, pageNumber);
+            var pdfBytes = await _departmentRepository.GenerateEmployeeReportByDepartmentAsync(departmentName);
             return File(pdfBytes, "application/pdf", "EmployeeReport.pdf");
         }
     }

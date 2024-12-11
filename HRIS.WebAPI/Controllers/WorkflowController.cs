@@ -101,6 +101,7 @@ namespace MiniProject7.WebAPI.Controllers
             return File(pdfBytes, "application/pdf", "LeaveReport.pdf");
         }
 
+        // Get process by current user
         [Authorize]
         [HttpGet("pending-processes")]
         public async Task<IActionResult> GetPendingProcesses()

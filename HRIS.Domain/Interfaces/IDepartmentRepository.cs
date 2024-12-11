@@ -25,6 +25,6 @@ namespace HRIS.Domain.Interfaces
         Task<Dictionary<string, int>> GetAverageSalaryByDepartmentAsync();
 
         // report employee by department name
-        Task<byte[]> GenerateEmployeeReportByDepartmentAsync(string departmentName, int pageNumber);
+        Task<byte[]> GenerateEmployeeReportByDepartmentAsync(string departmentName);
     }
 }

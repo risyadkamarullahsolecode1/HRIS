@@ -335,10 +335,10 @@ namespace MiniProject7.Infrastructure.Data.Repository
             return await _context.WorkflowActions
                 .Where(wa =>
                     // Supervisor can see pending tasks if status is "Waiting for Supervisor Approval"
-                    (userRoles.Contains("Supervisor") && wa.StepId == 1) ||
+                    (userRoles.Contains("Supervisor") && wa.Step.StepId == 1) ||
 
                     // HR can see tasks that are "Supervisor Approved"
-                    (userRoles.Contains("HR Manager") && wa.StepId == 3) 
+                    (userRoles.Contains("HR Manager") && wa.Step.StepId == 3) 
 
                 )
                 .Select(wa => wa.Process) // Select processes associated with workflow actions
