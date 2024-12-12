@@ -1,4 +1,5 @@
 ﻿using HRIS.Application.Dtos.Account;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,5 +20,6 @@ namespace HRIS.Application.Interfaces
         string GenerateRefreshToken();
         Task<ResponseModel> UpdateRoleAsync(string rolename);
         Task<ResponseModel> DeleteAsync(string userName);
+        Task<RefreshTokenResponseDto> RefreshAccessTokenAsync(HttpContext httpContext);
     }
 }

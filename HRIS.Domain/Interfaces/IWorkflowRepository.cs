@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,6 +11,7 @@ namespace HRIS.Domain.Interfaces
     public interface IWorkflowRepository
     {
         Task<Workflow> AddWorkflow(Workflow workflow);
+        Task<Workflow?> GetFirstOrDefaultAsync(Expression<Func<Workflow, bool>> expression);
         Task<WorkflowSequence> AddWorkflowSequence(WorkflowSequence workflowSequence);
         Task<LeaveRequest> SubmitLeaveRequestAsync(LeaveRequest request);
         Task<Process> AddProcessLeaveRequest(Process process);
@@ -19,7 +21,7 @@ namespace HRIS.Domain.Interfaces
         Task<string> GetEmployeeEmailById(string employeeId);
 
         // report generate leave report by leave type
-        Task<byte[]> GenerateLeaveReportByTypeAsync(DateTime startDate, DateTime endDate);
+        Task<byte[]> GenerateLeaveReportByTypeAsync(DateOnly startDate, DateOnly endDate);
 
         Task<IEnumerable<Process>> GetPendingProcessesForUserAsync(List<string> userRoles);
     }

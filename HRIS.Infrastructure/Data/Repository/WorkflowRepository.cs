@@ -16,6 +16,7 @@ using PdfSharpCore.Pdf;
 using PdfSharpCore;
 using TheArtOfDev.HtmlRenderer.Core;
 using TheArtOfDev.HtmlRenderer.PdfSharp;
+using System.Linq.Expressions;
 
 namespace MiniProject7.Infrastructure.Data.Repository
 {
@@ -41,6 +42,12 @@ namespace MiniProject7.Infrastructure.Data.Repository
             await _context.SaveChangesAsync();
             return workflow;
         }
+
+        public async Task<Workflow?> GetFirstOrDefaultAsync(Expression<Func<Workflow, bool>> expression)
+        {
+            return await _context.Workflows.FirstOrDefaultAsync(expression);
+        }
+
 
         // add workflow sequence
         public async Task<WorkflowSequence> AddWorkflowSequence(WorkflowSequence workflowSequence)
@@ -287,7 +294,7 @@ namespace MiniProject7.Infrastructure.Data.Repository
         }
 
         // report generate leave report by leave type
-        public async Task<byte[]> GenerateLeaveReportByTypeAsync(DateTime startDate, DateTime endDate)
+        public async Task<byte[]> GenerateLeaveReportByTypeAsync(DateOnly startDate, DateOnly endDate)
         {
             var leaves = await _context.LeaveRequests
                 .Where(l => l.StartDate >= startDate && l.EndDate <= endDate)

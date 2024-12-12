@@ -15,7 +15,7 @@ namespace HRIS.WebAPI.Controllers
             _dashboardService = dashboardService;
         }
 
-        [Authorize(Roles = "HR Manager, Administrator")]
+        [Authorize(Roles = "HR Manager, Administrator,Employee Supervisor")]
         [HttpGet]
         public async Task<IActionResult> GetKpiReport()
         {

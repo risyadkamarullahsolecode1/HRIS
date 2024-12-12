@@ -1,0 +1,55 @@
+﻿using HRIS.Application.Dtos;
+using HRIS.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace HRIS.WebAPI.Controllers
+{
+    [Route("api/[Controller]")]
+    [ApiController]
+    public class LeaveRequestController : ControllerBase
+    {
+        private readonly ILeaveRequestService _leaveRequestService;
+
+        public LeaveRequestController(ILeaveRequestService leaveRequestService)
+        {
+            _leaveRequestService = leaveRequestService;
+        }
+
+        [Authorize(Roles = "Employee")]
+        [HttpPost("submit")]
+        public async Task<IActionResult> SubmitRequest([FromForm] LeaveRequestDto leaveRequest, IFormFile? file)
+        {
+            var res = await _leaveRequestService.SubmitLeaveRequest(leaveRequest, file);
+            if (res == null)
+            {
+                return NotFound();
+            }
+            return Ok(res);
+        }
+
+        [Authorize(Roles = "HR Manager,Employee Supervisor")]
+        [HttpPost("review")]
+        public async Task<IActionResult> ReviewRequest(ReviewRequestDto reviewRequest)
+        {
+            var res = await _leaveRequestService.ReviewLeaveRequest(reviewRequest);
+            return Ok(res);
+        }
+
+        [Authorize]
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll()
+        {
+            var res = await _leaveRequestService.GetAllLeaveRequestStatuses();
+            return Ok(res);
+        }
+
+        [Authorize]
+        [HttpGet("{processId}")]
+        public async Task<IActionResult> GetDetail(int processId)
+        {
+            var res = await _leaveRequestService.GetProcessAsync(processId);
+            return Ok(res);
+        }
+    }
+}

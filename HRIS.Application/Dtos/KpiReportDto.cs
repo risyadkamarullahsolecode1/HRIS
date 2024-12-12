@@ -11,5 +11,6 @@ namespace HRIS.Application.Dtos
         public Dictionary<string, int> GetAverageSalaryByDepartmentAsync {  get; set; }
         public Dictionary<string, int> GetEmployeeByDepartment {  get; set; }
         public object GetTop5EmployeesByWorkingHours {  get; set; }
+        public IEnumerable<Object> GetFollowUpProcess {  get; set; }
     }
 }

@@ -95,7 +95,7 @@ namespace MiniProject7.WebAPI.Controllers
         }
 
         [HttpGet("generate-leave-report")]
-        public async Task<IActionResult> GenerateLeaveReport(DateTime startDate, DateTime endDate)
+        public async Task<IActionResult> GenerateLeaveReport(DateOnly startDate, DateOnly endDate)
         {
             var pdfBytes = await _workflowRepository.GenerateLeaveReportByTypeAsync(startDate, endDate);
             return File(pdfBytes, "application/pdf", "LeaveReport.pdf");

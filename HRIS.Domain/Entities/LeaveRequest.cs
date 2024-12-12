@@ -14,15 +14,16 @@ namespace HRIS.Domain.Entities
         public string? RequestName { get; set; }
         public string? Description { get; set; }
         public int ProcessId { get; set; } // Foreign Key to Process
+        public virtual Process? Process { get; set; }
         public string? EmployeeId { get; set; } // Foreign Key to AspNetUsers
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public virtual AppUser? Employee { get; set; }
+        public DateOnly? StartDate { get; set; }
+        public DateOnly? EndDate { get; set; }
         [RegularExpression("Annual Leave|Sick Leave|Personal Leave")]
         public string? LeaveType { get; set; } // e.g., Sick Leave, Personal Leave
         public string? Reason { get; set; }
-
-        // Navigation properties
-        public Process? Process { get; set; }
-        public AppUser? Employee { get; set; }
+        // File-related properties
+        public string? FileName { get; set; }
+        public string? FilePath { get; set; }
     }
 }

@@ -20,20 +20,14 @@ namespace HRIS.Domain.Entities
 
         [Column("mgrempno")]
         public int? Mgrempno { get; set; }
-
-        [Column("location")]
-        [StringLength(100)]
-        public string? Location { get; set; }
+        public int? LocationId { get; set; }
+        public virtual Location? LocationNavigation { get; set; }
 
         [Column("spvempno")]
         public int? Spvempno { get; set; }
 
         [InverseProperty("DeptnoNavigation")]
         public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
-
-        [ForeignKey("Location")]
-        [InverseProperty("Departments")]
-        public virtual Location? LocationNavigation { get; set; }
 
         [ForeignKey("Mgrempno")]
         [InverseProperty("DepartmentMgrempnoNavigations")]

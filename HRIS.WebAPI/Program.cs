@@ -1,6 +1,27 @@
 using HRIS.Infrastructure;
+using Microsoft.AspNetCore.CookiePolicy;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Serve the "Uploads" folder as static files
+var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+
+// Add services to the container.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        builder => builder
+            .WithOrigins("http://localhost:5173") // Replace with your React app's URL
+            .AllowCredentials() // Allow cookies
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
+builder.Services.AddCookiePolicy(options =>
+{
+    options.HttpOnly = HttpOnlyPolicy.Always;
+    options.Secure = CookieSecurePolicy.Always;
+});
 
 // Add services to the container.
 
@@ -21,7 +42,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("AllowReactApp");
 app.UseAuthentication();
 app.UseAuthorization();
 
