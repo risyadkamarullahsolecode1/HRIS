@@ -54,11 +54,13 @@ namespace HRIS.WebAPI.Controllers
             return Ok("project has been deleted !");
         }
 
+        // Project Report pdf
         [HttpGet("generate-project-report")]
         public async Task<IActionResult> GenerateProjectReport()
         {
+            var Filename = "ProjectReport.pdf";
             var pdfBytes = await _projectRepository.GenerateProjectReportAsync();
-            return File(pdfBytes, "application/pdf", "ProjectReport.pdf");
+            return File(pdfBytes, "application/pdf", Filename);
         }
     }
 }

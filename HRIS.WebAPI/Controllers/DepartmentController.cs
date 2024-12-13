@@ -74,11 +74,14 @@ namespace HRIS.WebAPI.Controllers
             var result = await _departmentRepository.GetAverageSalaryByDepartmentAsync();
             return Ok(result);
         }
+
+        // Employee per department name report
         [HttpGet("generate-employee-report")]
         public async Task<IActionResult> GenerateEmployeeReport(string departmentName)
         {
+            var Filename = "EmployeeReport.pdf";
             var pdfBytes = await _departmentRepository.GenerateEmployeeReportByDepartmentAsync(departmentName);
-            return File(pdfBytes, "application/pdf", "EmployeeReport.pdf");
+            return File(pdfBytes, "application/pdf", Filename);
         }
     }
 }

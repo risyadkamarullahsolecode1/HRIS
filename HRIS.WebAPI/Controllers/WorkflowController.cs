@@ -94,11 +94,13 @@ namespace MiniProject7.WebAPI.Controllers
             return Ok(result);
         }
 
+        // Leave Request Report Pdf
         [HttpGet("generate-leave-report")]
         public async Task<IActionResult> GenerateLeaveReport(DateOnly startDate, DateOnly endDate)
         {
+            var Filename = "LeaveReport.pdf";
             var pdfBytes = await _workflowRepository.GenerateLeaveReportByTypeAsync(startDate, endDate);
-            return File(pdfBytes, "application/pdf", "LeaveReport.pdf");
+            return File(pdfBytes, "application/pdf", Filename);
         }
 
         // Get process by current user
