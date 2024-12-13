@@ -119,9 +119,14 @@ namespace HRIS.Infrastructure.Data.Repository
         public async Task<Dictionary<string, int>> GetEmployeeByDepartment()
         {
             var result = await _context.Employees
-                .GroupBy(e => e.DeptnoNavigation.Deptname) 
-                .Select(g => new { Deptname = g.Key, Count = g.Count() }) 
-                .ToDictionaryAsync(x => x.Deptname, x => x.Count); 
+                .Where(e => e.DeptnoNavigation != null) // Exclude employees with no department
+                .GroupBy(e => e.DeptnoNavigation!.Deptname) // Group by department name
+                .Select(g => new
+                {
+                    Deptname = g.Key ?? "Unknown Department", // Handle null department names
+                    Count = g.Count()
+                })
+                .ToDictionaryAsync(x => x.Deptname, x => x.Count); // Convert to dictionary
 
             return result;
         }
@@ -129,15 +134,16 @@ namespace HRIS.Infrastructure.Data.Repository
         // dashboard average salary per each department
         public async Task<Dictionary<string, int>> GetAverageSalaryByDepartmentAsync()
         {
-            // Group employees by Deptno (Department ID), then calculate the average salary per department
+            // Ensure DeptnoNavigation and Salary are not null
             var averageSalaries = await _context.Employees
-                .GroupBy(e => e.Deptno) // Group by Department No
+                .Where(e => e.DeptnoNavigation != null && e.Salary.HasValue) // Exclude employees with no salary or department
+                .GroupBy(e => e.Deptno) // Group by Department ID
                 .Select(g => new
                 {
-                    DepartmentName = g.FirstOrDefault().DeptnoNavigation.Deptname, // Get the department name
-                    AverageSalary = (int)(g.Average(e => e.Salary) ?? 0) 
+                    DepartmentName = g.FirstOrDefault()!.DeptnoNavigation!.Deptname ?? "Unknown Department", // Handle null department names
+                    AverageSalary = (int)(g.Average(e => e.Salary) ?? 0) // Calculate average salary safely
                 })
-                .ToDictionaryAsync(x => x.DepartmentName, x => x.AverageSalary);
+                .ToDictionaryAsync(x => x.DepartmentName, x => x.AverageSalary); // Convert to dictionary
 
             return averageSalaries;
         }
@@ -154,8 +160,7 @@ namespace HRIS.Infrastructure.Data.Repository
                 .ToListAsync();
 
             // Start the HTML content for the PDF
-            string htmlContent = "<h1>Employee Report</h1>";
-            htmlContent += $"<h2>Department: {departmentName}</h2>";
+            string htmlContent = $"<h1>Employee Report</h1><h2>Department: {departmentName}</h2>";
 
             // Split the list into pages of 20 employees
             int totalPages = (int)Math.Ceiling(employees.Count / (double)pageSize);
@@ -163,7 +168,7 @@ namespace HRIS.Infrastructure.Data.Repository
             for (int page = 1; page <= totalPages; page++)
             {
                 htmlContent += $"<h3>Page {page} of {totalPages}</h3>";
-                htmlContent += "<table><thead><tr><td>Employee ID</td><td>Username</td><td>Full Name</td><td>Position</td></tr></thead><tbody>";
+                htmlContent += "<table style='width:100%; border-collapse: collapse;' border='1'><thead><tr><th>Employee ID</th><th>Full Name</th><th>Position</th></tr></thead><tbody>";
 
                 var employeesPage = employees
                     .Skip((page - 1) * pageSize)
@@ -172,7 +177,7 @@ namespace HRIS.Infrastructure.Data.Repository
 
                 employeesPage.ForEach(emp =>
                 {
-                    htmlContent += $"<tr><td>{emp.Empno}</td><td>{emp.Fname + " " + emp.Lname}</td><td>{emp.Fname} {emp.Lname}</td><td>{emp.Position}</td></tr>";
+                    htmlContent += $"<tr><td>{emp.Empno}</td><td>{emp.Fname} {emp.Lname}</td><td>{emp.Position}</td></tr>";
                 });
 
                 htmlContent += "</tbody></table>";
@@ -208,5 +213,6 @@ namespace HRIS.Infrastructure.Data.Repository
                 return stream.ToArray();
             }
         }
+
     }
 }
